@@ -1,3 +1,4 @@
+const functions = require('@google-cloud/functions-framework');
 var request = require('request');
 
 var CONFIG = {

@@ -9,6 +9,7 @@
   "author": "stareta1202",
   "license": "ISC",
   "dependencies": {
-    "@google-cloud/functions-framework": "^3.3.0"
+    "@google-cloud/functions-framework": "^3.3.0",
+    "request": "^2.88.2"
   }
 }
