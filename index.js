@@ -7,18 +7,14 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 app.get('/', (req, res) => {
-    console.log(`wow`);
     selectAndPost();
     res.send(`get Hello World'}!`);
 });
 
 app.post('/', (req, res) => {
-    console.log(`wow2`);
     selectAndPost();
     res.send(`Post Hello World'}!`);
 });
-
-
 
 
 var CONFIG = {
@@ -48,7 +44,6 @@ function selectAndPost() {
                 selectAndPost();
             }
         } else {
-            console.log('5252');
             body = JSON.parse(body);
             var linkID = body[Math.floor(Math.random() * body.length)];
             var url = "https://hacker-news.firebaseio.com/v0/item/" + linkID + ".json";
@@ -99,7 +94,6 @@ function postLink(title, link, score, author) {
         method: "post"
     };
 
-    console.log(title);
 
     request.post(
         {
@@ -115,6 +109,7 @@ app.listen(port, () => {
     console.log(`Rest API started successfully on port ${port}`);
 });
 
-functions.http('selectAndPost', (req, res) => {
-  res.send(`Hello ${req.query.name || req.body.name || 'World'}!`);
-});
+// functions.http('selectAndPost', (req, res) => {
+//   selectAndPost();
+//   res.send(`Hello World!`);
+// });
