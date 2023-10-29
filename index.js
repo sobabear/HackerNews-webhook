@@ -1,10 +1,24 @@
 const functions = require('@google-cloud/functions-framework');
 var request = require('request');
 
+const express = require('express');
+const app = express();
+
 const port = process.env.PORT || 8080;
-api.listen(port, () => {
-    console.log(`Rest API started successfully`);
+
+app.get('/', (req, res) => {
+    res.send(`get Hello ${req.query.name || req.body.name || 'World'}!`);
 });
+
+app.post('/', (req, res) => {
+    selectAndPost();
+    res.send(`Post Hello ${req.query.name || req.body.name || 'World'}!`);
+});
+
+app.listen(port, () => {
+    console.log(`Rest API started successfully on port ${port}`);
+});
+
 
 var CONFIG = {
     "webhook_url": "https://hooks.slack.com/services/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",
