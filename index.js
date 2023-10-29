@@ -1,16 +1,21 @@
 const functions = require('@google-cloud/functions-framework');
 var request = require('request');
 
+const port = process.env.PORT || 8080;
+api.listen(port, () => {
+    console.log(`Rest API started successfully`);
+});
+
 var CONFIG = {
-	"webhook_url": "https://hooks.slack.com/services/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",
-	"channel": "#general",
-	"bot_username": "HackerNewsBot",
-	"bot_icon_emoji": ":newspaper:",
-	"post_color": "#FF6600",
-	"fallback": "Newsbot: Your automated news aggregator."
+    "webhook_url": "https://hooks.slack.com/services/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",
+    "channel": "#general",
+    "bot_username": "HackerNewsBot",
+    "bot_icon_emoji": ":newspaper:",
+    "post_color": "#FF6600",
+    "fallback": "Newsbot: Your automated news aggregator."
 };
 
-selectAndPost();
+// selectAndPost();
 
 function selectAndPost() {
     // Choose a random URL pool from HN, with greater probability of selecting top stories. 
@@ -23,10 +28,10 @@ function selectAndPost() {
 
         if (err) {
             console.error("Newsbot failed to fetch " + api_url + "!");
-	    // Retry if set in config. 
-	    if(CONFIG.retry) {
-		    selectAndPost();
-	    }
+            // Retry if set in config. 
+            if (CONFIG.retry) {
+                selectAndPost();
+            }
         } else {
             body = JSON.parse(body);
             var linkID = body[Math.floor(Math.random() * body.length)];
@@ -81,3 +86,8 @@ function postLink(title, link, score, author) {
         }
     });
 }
+
+
+functions.http('selectAndPost', (req, res) => {
+  res.send(`Hello ${req.query.name || req.body.name || 'World'}!`);
+});
