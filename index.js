@@ -63,7 +63,7 @@ function selectAndPost() {
 
 function postLink(title, link, score, author) {
     var data = {
-        "text": title
+        "text": title + "\n" + link
     };
 
     var options = {
