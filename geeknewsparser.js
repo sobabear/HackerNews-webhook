@@ -1,79 +1,66 @@
 const functions = require('@google-cloud/functions-framework');
 var request = require('request');
-var DOMParser = require('dom-parser');
+const cheerio = require('cheerio');
 const express = require('express');
-
-const parser = new DOMParser();
-
 
 const app = express();
 const port = process.env.PORT || 8080;
 
 app.get('/', (req, res) => {
     getGeekNews();
-    res.send(`get Hello World'}!`);
+    res.send('get Hello World');
 });
 
 app.post('/', (req, res) => {
     getGeekNews();
-    res.send(`Post Hello World'}!`);
+    res.send('Post Hello World');
 });
 
-var webhook_url = "https://~~~";
+var webhook_url = "";
 var geeknews_url = "https://news.hada.io/";
 
-
 function getGeekNews() {
-    request(
-        { url: geeknews_url },
-        function cb(err, httpResponse, body) {
-            if (err) {
-                console.error('Geek News failed to fetch');
-            } else {
-                const htmlDoc = parser.parseFromString(body, 'text/html');
-                const topicRows = htmlDoc.querySelectorAll('.topic_row');
+    request({ url: geeknews_url }, function cb(err, httpResponse, body) {
+        if (err) {
+            console.error('Geek News failed to fetch');
+        } else {
+            const $ = cheerio.load(body); // Load the HTML using cheerio
 
-                topicRows.forEach((topicRow) => {
-                    const topictitle = topicRow.querySelector('.topictitle');
-                    const topicdesc = topicRow.querySelector('.topicdesc');
+            const topicRows = $('.topic_row');
 
-                    const titleLink = topictitle.querySelector('a');
-                    const titleHref = titleLink.getAttribute('href');
-                  
-                    if (topictitle && topicdesc) {
-                      const titleText = topictitle.querySelector('h1').textContent;
-                      const descText = topicdesc.querySelector('a.c99').textContent;
+            topicRows.each((index, element) => {
+                const topictitle = $(element).find('.topictitle');
+                const topicdesc = $(element).find('.topicdesc');
 
-                      postLink(titleText, titleHref, descText);
-                  
-                    }
-                  });
+                const titleLink = topictitle.find('a');
+                const titleHref = titleLink.attr('href');
 
-            }
+                if (topictitle && topicdesc) {
+                    const titleText = topictitle.find('h1').text();
+                    const descText = topicdesc.find('a.c99').text();
+
+                    postLink(titleText, titleHref, descText);
+                }
+            });
         }
-    );
+    });
 }
 
 function postLink(title, link, description) {
-    var data =  {
+    var data = {
         "text": title + "\n" + description + "\n" + link
     };
 
     request.post(
         {
-          headers : { 'Content-type' : 'application/json' },
-          url: webhook_url,
-          form : {payload: JSON.stringify(data )}
+            headers: { 'Content-type': 'application/json' },
+            url: webhook_url,
+            form: { payload: JSON.stringify(data) }
         },
         (error, res, body) => console.log(error, body, res.statusCode)
-      );
+    );
 }
 
 app.listen(port, () => {
     console.log(`Rest API started successfully on port ${port}`);
 });
-
-// functions.http('getGeekNews', (req, res) => {
-//   getGeekNews();
-//   res.send(`Hello World!`);
-// });
